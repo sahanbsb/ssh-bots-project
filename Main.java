@@ -2,7 +2,7 @@
 
 public class Main {
 	public static void main(String [] args) {
-		
+
 		FileRead.readFile("auth.log");
 		
         //Blocker.blocker(Storage.getIPdetc("193.104.41.55"));

@@ -35,7 +35,7 @@ public class FileRead {
 						
 						IPdet Obj = new IPdet(mIP.group(0), mDt.group(0));
 						
-						System.out.printf("                            %s read @ %s\n", mIP.group(0), mDt.group(0));
+						//System.out.printf("                            %s read @ %s\n", mIP.group(0), mDt.group(0));
 						
 						return Obj;
 				}
@@ -102,7 +102,6 @@ public class FileRead {
 			System.out.println(x);
 			System.exit(-1);
 		}
-		
 		
 		
 	}
