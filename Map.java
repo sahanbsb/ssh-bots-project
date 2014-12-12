@@ -126,10 +126,10 @@ public class Map {
     	try {
 			FileReader fileRd = new FileReader(fileName);
 			BufferedReader bufferRd = new BufferedReader(fileRd);
-			String line = bufferRd.readLine();
+			String line = null;
 			
 			while( (line = bufferRd.readLine()) != null) {
-				//System.out.println(line);
+				System.out.println(line);
                             String [] s = line.split(",");
 				Map.addIp(s[0]);
 			}
