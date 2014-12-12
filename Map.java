@@ -2,12 +2,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+//import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class Map {
 	
-	public static ArrayList<String> countries = new ArrayList<String>();
+	public static ArrayList<String> locations = new ArrayList<String>();
 	
     public static void mapCountries(ArrayList<String> countries) {
         String s;
@@ -19,16 +19,16 @@ public class Map {
         	//System.out.println(countries[i]);
         	 country = countries.get(i).replaceAll(" ", "%20");
         	//System.out.println(countries[i]);
-        	address = address + "&markers=color:red|label:aa|" + country;
+        	address = address + "&markers=color:red|label:"+ (i+1) +"|" + country;
         }
         
         System.out.println(address);
         
         try {
             p = Runtime.getRuntime().exec("firefox "+address);
-            BufferedReader br = new BufferedReader(
-                new InputStreamReader(p.getInputStream()));
-            while ((s = br.readLine()) != null)
+            //BufferedReader br = new BufferedReader(
+               // new InputStreamReader(p.getInputStream()));
+           // while ((s = br.readLine()) != null)
                 //System.out.println("line: " + s);
             p.waitFor();
             //System.out.println ("exit: " + p.exitValue());
@@ -48,32 +48,45 @@ public class Map {
     	return num;
     }
     
-    public static String GetCountry(Double ip){
-    	//ip to country data from http://software77.net/geo-ip/
-    	String fileName = "IpToCountryc.csv";
+    public static String GetLocation(Double ip){
+    	String fileName1 = "GeoLiteCity-Blocks.csv";
+        String fileName2 = "GeoLiteCity-Location.csv";
     	try {
-			FileReader fileRd = new FileReader(fileName);
-			BufferedReader bufferRd = new BufferedReader(fileRd);
-			String line = bufferRd.readLine();
+			FileReader fileRd1 = new FileReader(fileName1);
+			BufferedReader bufferRd1 = new BufferedReader(fileRd1);
+			String line1 = bufferRd1.readLine();
+                        
+                        FileReader fileRd2 = new FileReader(fileName2);
+			BufferedReader bufferRd2 = new BufferedReader(fileRd2);
+			String line2 = bufferRd2.readLine();
 			
-			while( (line = bufferRd.readLine()) != null) {
+			while( (line1 = bufferRd1.readLine()) != null) {
 				//System.out.println(line);
-				String [] s = line.split(",");
-				s[0]=s[0].replaceAll("\"", "");
-				s[1]=s[1].replaceAll("\"", "");
-				Double fromIp = Double.parseDouble(s[0]);
-				Double toIp = Double.parseDouble(s[1]);
+				String [] s1 = line1.split(",");
+				s1[0]=s1[0].replaceAll("\"", "");
+				s1[1]=s1[1].replaceAll("\"", "");
+				Double fromIp = Double.parseDouble(s1[0]);
+				Double toIp = Double.parseDouble(s1[1]);
 				if(fromIp<=ip && ip<=toIp){
-					s[6]=s[6].replaceAll("\"", "");
-					return s[6];
+					s1[2]=s1[2].replaceAll("\"", "");
+					//return s[6];
+                                        while((line2 = bufferRd2.readLine()) != null){
+                                            String [] s2 = line2.split(",");
+                                            if(s1[2].equals(s2[0])){
+                                                String longitude = s2[5].replaceAll("\"", "");
+                                                String latitude = s2[6].replaceAll("\"", "");
+                                                String location = longitude + "," + latitude;
+                                                return location;
+                                            }
+                                        }
 				}
 			}
 			
-			fileRd.close();
-			bufferRd.close();
+			fileRd1.close();
+			bufferRd1.close();
 			
 		} catch (FileNotFoundException x) {
-			System.out.println("Make sure " + fileName + " is also here!");
+			System.out.println("Make sure " + fileName1 + " is also here!");
 			System.exit(-1);
 			
 		} catch (IOException x) {
@@ -86,13 +99,24 @@ public class Map {
     }
     
     public static void showMap(){
-    	Map.mapCountries(countries);
+    	Map.mapCountries(locations);
     }
     
     public static void addIp(String ip){
     	Double ipNum = Map.Ip2Num(ip);
-    	String country = Map.GetCountry(ipNum);
-    	Map.countries.add(country);
+    	String location = Map.GetLocation(ipNum);
+    	boolean flag = false;
+    	for(int i=0; i<locations.size(); i++){
+    		if(locations.get(i).equals(location)){
+    			flag = true;
+    		}
+    	}
+    	if(flag == false){
+            System.out.printf(ip+"  ");
+    		Map.locations.add(location);
+    		System.out.println(location);
+    	}
+    	
     }
     
     public static void main(String [] args){
@@ -106,7 +130,8 @@ public class Map {
 			
 			while( (line = bufferRd.readLine()) != null) {
 				//System.out.println(line);
-				Map.addIp(line);
+                            String [] s = line.split(",");
+				Map.addIp(s[0]);
 			}
 			
 			fileRd.close();

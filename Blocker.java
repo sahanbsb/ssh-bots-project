@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Blocker {
@@ -17,6 +18,7 @@ public class Blocker {
         
         public static void blocker(IPdetcount obj){
             String IP = obj.getIP();
+            Date T = obj.getTime();
             //System.out.println(IP + " is blocked");//should implement the blocker here
             block_ip(IP,true);
             remove_blck(IP);
@@ -25,7 +27,7 @@ public class Blocker {
 			
 			try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(writeFile, true)))) {
 				
-				out.printf(IP + "\n");
+				out.printf(IP + ", " + T +"\n");
 				
 			} catch (FileNotFoundException x) {
 				System.out.println("Make sure " + writeFile + " is also here!");
