@@ -55,7 +55,6 @@ public class Blocker {
                     
                     //System.out.println(matched_ip.group(0) + " equals to " + IP);
                     if (!matched_ip.group(0).equals(IP)){
-                        System.out.println("sdgasg");
                         writer.write(line);
                         writer.newLine();
                     }  

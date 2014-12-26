@@ -7,9 +7,9 @@ import java.util.ArrayList;
 
 public class Map {
 	
-	public static ArrayList<String> locations = new ArrayList<String>();
+	public static ArrayList<String> locations = new ArrayList<>();
 	
-    public static void mapCountries(ArrayList<String> countries) {
+    public static String mapCountries(ArrayList<String> countries) {
         String s;
         String address = "https://maps.googleapis.com/maps/api/staticmap?center=Sri%20Lanka&zoom=1&size=1000x700&maptype=roadmap&format=jpg";
         Process p;
@@ -22,20 +22,22 @@ public class Map {
         	address = address + "&markers=color:red|label:"+ (i+1) +"|" + country;
         }
         
-        System.out.println(address);
+        //System.out.println(address);
         
-        try {
-            p = Runtime.getRuntime().exec("firefox "+address);
-            //BufferedReader br = new BufferedReader(
-               // new InputStreamReader(p.getInputStream()));
-           // while ((s = br.readLine()) != null)
-                //System.out.println("line: " + s);
-            p.waitFor();
-            //System.out.println ("exit: " + p.exitValue());
-            p.destroy();
-        } catch (Exception e) {
-        	
-        }
+//        try {
+//            p = Runtime.getRuntime().exec("firefox "+address);
+//            //BufferedReader br = new BufferedReader(
+//               // new InputStreamReader(p.getInputStream()));
+//           // while ((s = br.readLine()) != null)
+//                //System.out.println("line: " + s);
+//            p.waitFor();
+//            //System.out.println ("exit: " + p.exitValue());
+//            p.destroy();
+//        } catch (Exception e) {
+//        	
+//        }
+        
+        return address;
     }
     
     public static double Ip2Num(String Ip){
@@ -98,55 +100,69 @@ public class Map {
     	return null;
     }
     
-    public static void showMap(){
-    	Map.mapCountries(locations);
-    }
     
     public static void addIp(String ip){
+        
     	Double ipNum = Map.Ip2Num(ip);
-    	String location = Map.GetLocation(ipNum);
-    	boolean flag = false;
-    	for(int i=0; i<locations.size(); i++){
+    	String location = "0,0";
+        if(Map.GetLocation(ipNum)!=null){
+            location = Map.GetLocation(ipNum);
+            boolean flag = false;
+            for(int i=0; i<locations.size(); i++){
+            
     		if(locations.get(i).equals(location)){
     			flag = true;
     		}
-    	}
-    	if(flag == false){
-            System.out.printf(ip+"  ");
+            }
+            if(flag == false){
+                //System.out.printf(ip+"  ");
     		Map.locations.add(location);
-    		System.out.println(location);
-    	}
+    		//System.out.println(location);
+            }
+        }else{
+            System.out.println("Location not found for "+ip);
+        }
+        //System.out.println(ip +" " +location+" "+ipNum);
     	
+    	
+    }
+    
+    public static void fillArrayList(){
+        String fileName = "blocked.txt";
+    	try {
+                    FileReader fileRd = new FileReader(fileName);
+                    BufferedReader bufferRd = new BufferedReader(fileRd);
+                    String line = null;
+			
+                    while( (line = bufferRd.readLine()) != null) {
+                        //System.out.println(line);
+                        String [] s = line.split(" @ ");
+                        Map.addIp(s[0]);
+                    }
+			
+                    fileRd.close();
+                    bufferRd.close();
+			
+                    } catch (FileNotFoundException x) {
+                        System.out.println("Make sure " + fileName + " is also here!");
+                        System.exit(-1);
+                    } catch (IOException x) {
+                        System.out.println(x);
+                        System.exit(-1);
+                    }
+    }
+    
+    public static String getAddess(){
+        Map.fillArrayList();
+        return Map.mapCountries(locations);
     }
     
     public static void main(String [] args){
 		
     	
-    	String fileName = "blocked.txt";
-    	try {
-			FileReader fileRd = new FileReader(fileName);
-			BufferedReader bufferRd = new BufferedReader(fileRd);
-			String line = null;
-			
-			while( (line = bufferRd.readLine()) != null) {
-				System.out.println(line);
-                            String [] s = line.split(",");
-				Map.addIp(s[0]);
-			}
-			
-			fileRd.close();
-			bufferRd.close();
-			
-		} catch (FileNotFoundException x) {
-			System.out.println("Make sure " + fileName + " is also here!");
-			System.exit(-1);
-			
-		} catch (IOException x) {
-			System.out.println(x);
-			System.exit(-1);
-		}
+    	Map.fillArrayList();
 		
-		Map.showMap();
+        System.out.println(Map.mapCountries(locations));
 		
 		//System.out.println(Map.Ip2Num("1.2.3.4"));
 		
